@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+
+  <style>
+    /* atur tampilan body (background & posisi tengah) */
+    body {
+      font-family: Arial;
+      background-color: #f0f2f5;
+
+      display: flex; /* aktifkan flexbox */
+      justify-content: center; /* tengah horizontal */
+      align-items: center; /* tengah vertical */
+
+      height: 100vh; /* tinggi full layar */
+    }
+
+    /* kotak login */
+    .container {
+      background: white; /* warna box */
+      padding: 30px; /* jarak dalam */
+      border-radius: 10px; /* sudut melengkung */
+
+      width: 250px;
+      text-align: center;
+    }
+
+    /* input username & password */
+    input {
+      width: 100%; /* full lebar */
+      padding: 10px;
+      margin: 8px 0; /* jarak atas bawah */
+    }
+
+    /* tombol login */
+    button {
+      width: 100%;
+      padding: 10px;
+      background: blue;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* efek saat mouse diarahkan */
+    button:hover {
+      background: darkblue;
+    }
+
+    /* pesan hasil */
+    #result {
+      margin-top: 10px;
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- container utama -->
+  <div class="container">
+
+    <h2>Login</h2>
+
+    <!-- input username -->
+    <input type="text" id="username" placeholder="Username">
+
+    <!-- input password -->
+    <input type="password" id="password" placeholder="Password">
+
+    <!-- tombol login -->
+    <button id="loginBtn">Login</button>
+
+    <!-- tempat tampil pesan -->
+    <p id="result"></p>
+
+    <!-- link ke register -->
+    <p>Belum punya akun? <a href="register.html">Register</a></p>
+
+  </div>
+
+  <script>
+
+    // ambil tombol login
+    const button = document.getElementById("loginBtn");
+
+    // event ketika tombol diklik
+    button.addEventListener("click", async (e) => {
+
+      e.preventDefault(); // cegah reload halaman
+
+      // ambil input user
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      // kirim data ke backend (API login)
+      const res = await fetch("http://localhost:3000/login", {
+        method: "POST",
+
+        // header supaya server tahu ini JSON
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        // kirim data username & password
+        body: JSON.stringify({
+          username,
+          password
+        })
+      });
+
+      // ambil response dari server
+      const data = await res.json();
+
+      // kalau login gagal
+      if (!res.ok) {
+        document.getElementById("result").innerText = data.message;
+        return; // hentikan proses
+      }
+
+      // tampilkan pesan sukses
+      document.getElementById("result").innerText = data.message;
+
+      // kalau ada token (login berhasil)
+      if (data.token) {
+
+        // simpan token di browser
+        localStorage.setItem("token", data.token);
+
+        // pindah ke dashboard
+        window.location.href = "dashboard.html";
+      }
+    });
+
+  </script>
+
+</body>
+</html>

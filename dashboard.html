@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background-color: #2d65b9;
+    }
+
+    /* navbar atas */
+    .navbar {
+      background: #1877f2;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h2 {
+      margin: 0;
+    }
+
+    .logout-btn {
+      background: rgb(241, 153, 153);
+      border: none;
+      padding: 8px 15px;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .logout-btn:hover {
+      background: darkred;
+    }
+
+    /* container utama */
+    .container {
+  display: flex;
+  justify-content: center;  /* tengah horizontal */
+  align-items: center;      /* tengah vertical */
+  height: calc(100vh - 60px); /* full tinggi dikurangi navbar */
+}
+    
+
+    /* card */
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    #result {
+      margin-top: 10px;
+      color: #333;
+    }
+  </style>
+
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <h2>Dashboard</h2>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="container">
+
+    <div class="card">
+      <h3>Informasi User</h3>
+      <p id="result">Loading...</p>
+    </div>
+
+  </div>
+
+  <script>
+
+    const token = localStorage.getItem("token");
+
+    // kalau belum login
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    // ambil data dari backend
+    fetch("http://localhost:3000/dashboard", {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("result").innerText = data.message;
+    })
+    .catch(() => {
+      document.getElementById("result").innerText = "Gagal ambil data ❌";
+    });
+
+    // logout
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+  </script>
+
+</body>
+</html>
